@@ -1,8 +1,19 @@
-import { createContext, useContext, useState, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import type { Card, Deck, Rating } from '../types';
 import { storage } from '../utils/storage';
 import { createCard, createDeck } from '../utils/factory';
 import { scheduleCard, isDue } from '../utils/sm2';
+
+export interface ImportPayload {
+  name: string;
+  cards: { front: string; back: string }[];
+}
+
+export interface ImportResult {
+  decksCreated: number;
+  cardsAdded: number;
+  duplicatesSkipped: number;
+}
 
 interface StoreValue {
   decks: Deck[];
@@ -15,8 +26,7 @@ interface StoreValue {
   updateCard: (id: string, front: string, back: string) => void;
   deleteCard: (id: string) => void;
   reviewCard: (id: string, rating: Rating) => void;
-  importDeck: (deck: Deck, cards: Card[]) => void;
-  importDecks: (items: { deck: Deck; cards: Card[] }[]) => void;
+  importDecks: (payloads: ImportPayload[]) => ImportResult;
   cardsForDeck: (deckId: string) => Card[];
   dueCardsForDeck: (deckId: string) => Card[];
   newCardsForDeck: (deckId: string) => Card[];
@@ -24,67 +34,118 @@ interface StoreValue {
 
 const StoreContext = createContext<StoreValue | null>(null);
 
+const normalize = (text: string) => text.trim().toLowerCase();
+
 export function StoreProvider({ children }: { children: ReactNode }) {
   const [decks, setDecks] = useState<Deck[]>(() => storage.loadDecks());
   const [cards, setCards] = useState<Card[]>(() => storage.loadCards());
   const [reviewLog, setReviewLog] = useState<string[]>(() => storage.loadReviewLog());
 
-  const persistDecks = (next: Deck[]) => {
-    setDecks(next);
-    storage.saveDecks(next);
-  };
-  const persistCards = (next: Card[]) => {
-    setCards(next);
-    storage.saveCards(next);
-  };
-  const persistLog = (next: string[]) => {
-    setReviewLog(next);
-    storage.saveReviewLog(next);
-  };
+  // Updates go through functional setters so rapid actions (double clicks,
+  // fast key presses) never overwrite each other with a stale copy.
+  const updateDecks = (fn: (prev: Deck[]) => Deck[]) =>
+    setDecks((prev) => {
+      const next = fn(prev);
+      storage.saveDecks(next);
+      return next;
+    });
+  const updateCards = (fn: (prev: Card[]) => Card[]) =>
+    setCards((prev) => {
+      const next = fn(prev);
+      storage.saveCards(next);
+      return next;
+    });
+  const updateLog = (fn: (prev: string[]) => string[]) =>
+    setReviewLog((prev) => {
+      const next = fn(prev);
+      storage.saveReviewLog(next);
+      return next;
+    });
+
+  // Keep multiple open tabs in sync instead of letting one tab overwrite the other.
+  useEffect(() => {
+    const onStorage = (e: StorageEvent) => {
+      if (e.storageArea !== localStorage) return;
+      setDecks(storage.loadDecks());
+      setCards(storage.loadCards());
+      setReviewLog(storage.loadReviewLog());
+    };
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
+  }, []);
 
   const addDeck = (name: string): Deck => {
     const deck = createDeck(name);
-    persistDecks([...decks, deck]);
+    updateDecks((prev) => [...prev, deck]);
     return deck;
   };
 
   const renameDeck = (id: string, name: string) => {
-    persistDecks(decks.map((d) => (d.id === id ? { ...d, name } : d)));
+    updateDecks((prev) => prev.map((d) => (d.id === id ? { ...d, name } : d)));
   };
 
   const deleteDeck = (id: string) => {
-    persistDecks(decks.filter((d) => d.id !== id));
-    persistCards(cards.filter((c) => c.deckId !== id));
+    updateDecks((prev) => prev.filter((d) => d.id !== id));
+    updateCards((prev) => prev.filter((c) => c.deckId !== id));
   };
 
   const addCard = (deckId: string, front: string, back: string) => {
-    persistCards([...cards, createCard(deckId, front, back)]);
+    const card = createCard(deckId, front, back);
+    updateCards((prev) => [...prev, card]);
   };
 
   const updateCard = (id: string, front: string, back: string) => {
-    persistCards(cards.map((c) => (c.id === id ? { ...c, front, back } : c)));
+    updateCards((prev) => prev.map((c) => (c.id === id ? { ...c, front, back } : c)));
   };
 
   const deleteCard = (id: string) => {
-    persistCards(cards.filter((c) => c.id !== id));
+    updateCards((prev) => prev.filter((c) => c.id !== id));
   };
 
   const reviewCard = (id: string, rating: Rating) => {
-    const card = cards.find((c) => c.id === id);
-    if (!card) return;
-    const updated = scheduleCard(card, rating);
-    persistCards(cards.map((c) => (c.id === id ? updated : c)));
-    persistLog([...reviewLog, new Date().toISOString()]);
+    const now = new Date();
+    updateCards((prev) => prev.map((c) => (c.id === id ? scheduleCard(c, rating, now) : c)));
+    updateLog((prev) => [...prev, now.toISOString()]);
   };
 
-  const importDeck = (deck: Deck, importedCards: Card[]) => {
-    persistDecks([...decks, deck]);
-    persistCards([...cards, ...importedCards]);
-  };
+  /**
+   * Imports decks, merging into an existing deck with the same name and
+   * skipping cards whose front already exists there, so re-importing a file
+   * never creates duplicates or resets progress.
+   */
+  const importDecks = (payloads: ImportPayload[]): ImportResult => {
+    const result: ImportResult = { decksCreated: 0, cardsAdded: 0, duplicatesSkipped: 0 };
+    const nextDecks = [...decks];
+    const newCards: Card[] = [];
+    const frontsByDeck = new Map<string, Set<string>>();
+    for (const card of cards) {
+      if (!frontsByDeck.has(card.deckId)) frontsByDeck.set(card.deckId, new Set());
+      frontsByDeck.get(card.deckId)!.add(normalize(card.front));
+    }
 
-  const importDecks = (items: { deck: Deck; cards: Card[] }[]) => {
-    persistDecks([...decks, ...items.map((item) => item.deck)]);
-    persistCards([...cards, ...items.flatMap((item) => item.cards)]);
+    for (const payload of payloads) {
+      let deck = nextDecks.find((d) => normalize(d.name) === normalize(payload.name));
+      if (!deck) {
+        deck = createDeck(payload.name);
+        nextDecks.push(deck);
+        result.decksCreated += 1;
+      }
+      const fronts = frontsByDeck.get(deck.id) ?? new Set<string>();
+      frontsByDeck.set(deck.id, fronts);
+      for (const { front, back } of payload.cards) {
+        if (fronts.has(normalize(front))) {
+          result.duplicatesSkipped += 1;
+          continue;
+        }
+        fronts.add(normalize(front));
+        newCards.push(createCard(deck.id, front, back));
+        result.cardsAdded += 1;
+      }
+    }
+
+    updateDecks(() => nextDecks);
+    updateCards((prev) => [...prev, ...newCards]);
+    return result;
   };
 
   const cardsForDeck = (deckId: string) => cards.filter((c) => c.deckId === deckId);
@@ -104,7 +165,6 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     updateCard,
     deleteCard,
     reviewCard,
-    importDeck,
     importDecks,
     cardsForDeck,
     dueCardsForDeck,

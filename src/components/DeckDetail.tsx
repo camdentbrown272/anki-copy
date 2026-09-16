@@ -4,11 +4,12 @@ import type { Card } from '../types';
 import { Modal } from './Modal';
 import { EmptyState } from './EmptyState';
 import { CardEditorModal } from './CardEditorModal';
+import type { ReviewMode } from './ReviewSession';
 
 interface DeckDetailProps {
   deckId: string;
   onBack: () => void;
-  onStartReview: () => void;
+  onStartReview: (mode: ReviewMode) => void;
 }
 
 export function DeckDetail({ deckId, onBack, onStartReview }: DeckDetailProps) {
@@ -55,7 +56,8 @@ export function DeckDetail({ deckId, onBack, onStartReview }: DeckDetailProps) {
     a.href = url;
     a.download = `${deck.name.replace(/\s+/g, '-').toLowerCase()}.json`;
     a.click();
-    URL.revokeObjectURL(url);
+    // Revoking immediately can cancel the download in some browsers.
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
 
   const commitRename = () => {
@@ -97,7 +99,14 @@ export function DeckDetail({ deckId, onBack, onStartReview }: DeckDetailProps) {
             Add card
           </button>
           <button
-            onClick={onStartReview}
+            onClick={() => onStartReview('all')}
+            disabled={cards.length === 0}
+            className="rounded-lg border border-indigo-500 px-4 py-2 text-sm font-medium text-indigo-500 hover:bg-indigo-50 disabled:cursor-not-allowed disabled:opacity-40 dark:hover:bg-indigo-950"
+          >
+            Study all ({cards.length})
+          </button>
+          <button
+            onClick={() => onStartReview('due')}
             disabled={dueCount === 0}
             className="rounded-lg bg-indigo-500 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-600 disabled:cursor-not-allowed disabled:opacity-40"
           >

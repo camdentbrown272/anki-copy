@@ -4,12 +4,13 @@ import { Dashboard } from './components/Dashboard';
 import { DeckDetail } from './components/DeckDetail';
 import { ReviewSession } from './components/ReviewSession';
 import { StatsPage } from './components/StatsPage';
+import type { ReviewMode } from './components/ReviewSession';
 import { useTheme } from './hooks/useTheme';
 
 type View =
   | { name: 'dashboard' }
   | { name: 'deck'; deckId: string }
-  | { name: 'review'; deckId: string }
+  | { name: 'review'; deckId: string; mode: ReviewMode }
   | { name: 'stats' };
 
 export default function App() {
@@ -33,12 +34,14 @@ export default function App() {
           <DeckDetail
             deckId={view.deckId}
             onBack={() => setView({ name: 'dashboard' })}
-            onStartReview={() => setView({ name: 'review', deckId: view.deckId })}
+            onStartReview={(mode) => setView({ name: 'review', deckId: view.deckId, mode })}
           />
         )}
         {view.name === 'review' && (
           <ReviewSession
+            key={`${view.deckId}-${view.mode}`}
             deckId={view.deckId}
+            mode={view.mode}
             onExit={() => setView({ name: 'deck', deckId: view.deckId })}
           />
         )}

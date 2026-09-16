@@ -1,20 +1,11 @@
 import { useRef, useState } from 'react';
-import { useStore } from '../context/StoreContext';
+import { useStore, type ImportPayload } from '../context/StoreContext';
 import { Modal } from './Modal';
 import { EmptyState } from './EmptyState';
-import type { Card, Deck } from '../types';
-import { generateId } from '../utils/id';
 
 interface DashboardProps {
   onOpenDeck: (deckId: string) => void;
 }
-
-interface DeckPayload {
-  deck: { name: string };
-  cards: { front: string; back: string }[];
-}
-
-type ImportPayload = DeckPayload | DeckPayload[];
 
 export function Dashboard({ onOpenDeck }: DashboardProps) {
   const { decks, cardsForDeck, dueCardsForDeck, newCardsForDeck, addDeck, deleteDeck, importDecks } =
@@ -32,36 +23,33 @@ export function Dashboard({ onOpenDeck }: DashboardProps) {
   };
 
   const handleImportFile = async (file: File) => {
+    let payloads: ImportPayload[];
     try {
-      const text = await file.text();
-      const parsed = JSON.parse(text) as ImportPayload;
-      const payloads = Array.isArray(parsed) ? parsed : [parsed];
-      const items = payloads.map((payload) => {
-        const newDeckId = generateId();
-        const now = new Date().toISOString();
-        const newDeck: Deck = {
-          id: newDeckId,
-          name: payload.deck?.name || 'Imported deck',
-          createdAt: now,
-        };
-        const newCards: Card[] = (payload.cards || []).map((c) => ({
-          id: generateId(),
-          deckId: newDeckId,
-          front: c.front,
-          back: c.back,
-          interval: 0,
-          repetitions: 0,
-          easeFactor: 2.5,
-          dueDate: now,
-          state: 'new',
-          createdAt: now,
-        }));
-        return { deck: newDeck, cards: newCards };
+      const parsed: unknown = JSON.parse(await file.text());
+      const list = Array.isArray(parsed) ? parsed : [parsed];
+      payloads = list.map((item) => {
+        const entry = item as { deck?: { name?: unknown }; cards?: unknown };
+        if (!Array.isArray(entry.cards)) throw new Error('missing cards');
+        const cards = entry.cards
+          .filter(
+            (c): c is { front: string; back: string } =>
+              typeof c?.front === 'string' && typeof c?.back === 'string'
+          )
+          .map((c) => ({ front: c.front, back: c.back }))
+          .filter((c) => c.front.trim() && c.back.trim());
+        const name = typeof entry.deck?.name === 'string' ? entry.deck.name.trim() : '';
+        return { name: name || 'Imported deck', cards };
       });
-      importDecks(items);
     } catch {
       alert('Could not import this file. Make sure it is a valid exported deck.');
+      return;
     }
+    const { decksCreated, cardsAdded, duplicatesSkipped } = importDecks(payloads);
+    alert(
+      `Imported ${cardsAdded} card${cardsAdded === 1 ? '' : 's'}` +
+        (decksCreated ? ` into ${decksCreated} new deck${decksCreated === 1 ? '' : 's'}` : '') +
+        (duplicatesSkipped ? `. Skipped ${duplicatesSkipped} you already had.` : '.')
+    );
   };
 
   return (
@@ -77,7 +65,7 @@ export function Dashboard({ onOpenDeck }: DashboardProps) {
           <input
             ref={fileInputRef}
             type="file"
-            accept="application/json"
+            accept=".json,application/json"
             className="hidden"
             onChange={(e) => {
               const file = e.target.files?.[0];
@@ -123,7 +111,14 @@ export function Dashboard({ onOpenDeck }: DashboardProps) {
                   <span
                     role="button"
                     tabIndex={0}
+                    aria-label={`Delete ${deck.name}`}
                     onClick={(e) => {
+                      e.stopPropagation();
+                      if (confirm(`Delete "${deck.name}" and all its cards?`)) deleteDeck(deck.id);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key !== 'Enter' && e.key !== ' ') return;
+                      e.preventDefault();
                       e.stopPropagation();
                       if (confirm(`Delete "${deck.name}" and all its cards?`)) deleteDeck(deck.id);
                     }}
