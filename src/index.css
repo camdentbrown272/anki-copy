@@ -1,0 +1,105 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  color-scheme: dark;
+}
+html:not(.dark) {
+  color-scheme: light;
+}
+
+* {
+  scrollbar-width: thin;
+}
+
+/* Flip-card 3D animation */
+.flip-card {
+  perspective: 1200px;
+}
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.5s;
+  transform-style: preserve-3d;
+}
+.flip-card-inner.flipped {
+  transform: rotateY(180deg);
+}
+.flip-card-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.flip-card-back {
+  transform: rotateY(180deg);
+}
+
+/* Minimal markdown styling for card faces & previews */
+.markdown-body {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+.markdown-body :where(h1, h2, h3) {
+  font-weight: 600;
+  margin-bottom: 0.5em;
+}
+.markdown-body p {
+  margin-bottom: 0.75em;
+  line-height: 1.6;
+}
+.markdown-body p:last-child {
+  margin-bottom: 0;
+}
+.markdown-body ul,
+.markdown-body ol {
+  margin: 0.5em 0 0.75em 1.25em;
+}
+.markdown-body ul {
+  list-style: disc;
+}
+.markdown-body ol {
+  list-style: decimal;
+}
+.markdown-body code {
+  background: rgba(100, 100, 100, 0.15);
+  padding: 0.1em 0.35em;
+  border-radius: 0.25em;
+  font-size: 0.9em;
+}
+.markdown-body pre {
+  background: rgba(100, 100, 100, 0.1);
+  padding: 0.75em;
+  border-radius: 0.5em;
+  overflow-x: auto;
+  margin-bottom: 0.75em;
+}
+.markdown-body pre code {
+  background: none;
+  padding: 0;
+}
+.markdown-body blockquote {
+  border-left: 3px solid rgba(100, 100, 100, 0.3);
+  padding-left: 0.75em;
+  opacity: 0.85;
+  margin-bottom: 0.75em;
+}
+.markdown-body strong {
+  font-weight: 600;
+}
+.markdown-body a {
+  color: rgb(99 102 241);
+  text-decoration: underline;
+}
+.markdown-body table {
+  border-collapse: collapse;
+  margin-bottom: 0.75em;
+}
+.markdown-body th,
+.markdown-body td {
+  border: 1px solid rgba(100, 100, 100, 0.3);
+  padding: 0.35em 0.6em;
+}

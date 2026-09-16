@@ -1,0 +1,86 @@
+#separator:tab
+#html:false
+#columns:Front,Back,Tags
+#tags column:3
+What are the 5 stages of the SaaS video library curriculum?	Product, Business Model & Pricing, Go-To-Market, Customers, Marketing	saas-video
+What are the 5 stages of the 5A Framework (Priestley)?	Alignment, Awareness, Accountabilities, Activities, Assets	5a-framework
+In the 5A Framework, what are the two business model choices at the Alignment stage?	Lifestyle Business (fun, freedom, team of 5-10) vs Performance Business (high growth, team of 30-50+, high valuation) - they require different lives	5a-framework
+In the 5A Framework, what is the "awareness list"?	A rolling list of concerns/blind spots (e.g. low recurring revenue, weak tech, key-person risk) that must be solved to hit the goal	5a-framework
+What does "cultural safety" mean in the 5A Awareness stage?	Anyone on the team can raise a concern without risk - deal with reality, not the version where everything's fine	5a-framework
+What is the "who, not how" principle in 5A Accountabilities?	Don't try to solve every major problem yourself - assemble a team, hire a coach, or join an accelerator, and assign specific ownership	5a-framework
+What happens in the 5A Monday morning meeting?	Each team member declares their 3-6 most important activities for the week and gets feedback	5a-framework
+What happens in the 5A Friday afternoon debrief?	Check what got done and surface blockers	5a-framework
+In the 5A Assets stage, what are the three moves for building an asset?	Buy, develop, or improve	5a-framework
+What is the "24 assets" concept in the 5A Framework?	~24 key business assets (IP, content, systems, processes, etc.) that compound business value over time	5a-framework
+How often should the 5A cycle be run?	Every 90 days, as a Quarterly Reset	5a-framework
+What is Kletchi's core distribution philosophy?	Distribution is a volume game, not luck - make virality "deterministic" through extreme output	distribution-playbook
+What platform does Kletchi favor for new account reach, and why over Instagram?	TikTok - better reach for new accounts	distribution-playbook
+What is Kletchi's "micro-streamer" tactic?	Pay small "micro/degenerate" streamers (e.g. $120) who haven't yet peaked to recreate his proven viral formats	distribution-playbook
+What does "Show Don't Tell" mean in Kletchi's method?	Show the app solving a real-time problem live, instead of a hard sell	distribution-playbook
+What daily video output does Kletchi scale to?	Starts at 3 videos/day, scales to 100 videos/day across multiple accounts	distribution-playbook
+What are Kletchi's two apps and what do they target?	Social Wizard (social skills/dating advice) and Clean Eats (health/skin-conscious food scanning) - both target confidence	distribution-playbook
+What is Kletchi's monthly infra cost and resulting margin?	$1-2k/month infra, 90%+ profit margin after app store fees, no paid ads	distribution-playbook
+What is Kletchi's tech stack (frontend / backend / db / analytics)?	React Native / NestJS on Render or Heroku / Firebase / Mixpanel	distribution-playbook
+Why does Kletchi say don't outsource early?	Founders must learn the niche and viral formats themselves to avoid burning capital	distribution-playbook
+What niche does Kletchi flag as overlooked for 2025?	Education - apps that package a specific skill (e.g. boxing, persuasion)	distribution-playbook
+What is the one-line solo app execution sequence?	Validate demand -> prove you can get attention -> build fast -> charge immediately -> pay to scale only what already works	distribution-playbook
+In Phase 1 (Validate) of the solo app playbook, what must you identify before building anything?	People already paying for a less effective solution - the exact product and price they currently pay	distribution-playbook
+What sources should confirm real market revenue data in Phase 1?	Indie Hackers, Starter Story, Sensor Tower, Appfigures	distribution-playbook
+What's the Phase 1 rule about original ideas?	Don't pursue original ideas - capture a portion of a proven market	distribution-playbook
+In Phase 2 (Distribution First), what must you decide before writing code?	How your first 1,000 users will discover you	distribution-playbook
+What's the recommended "boring stack" for web and mobile?	Web: Next.js on Vercel. Mobile: React Native + Expo, starting iOS	distribution-playbook
+What's the boring stack for data / auth / payments?	Data: Supabase. Auth: Clerk or Firebase. Payments: Stripe	distribution-playbook
+What role do Cursor/Warp play in the solo app playbook?	Speed enhancements to move fast - not a competitive edge	distribution-playbook
+What must Phase 4 (Secure and Harden) implement for data access?	Row-level security, so users can only access their own data	distribution-playbook
+What should be cached or offloaded in Phase 4?	Cache repeated reads with Redis; push heavy tasks (AI, PDF parsing) to async jobs	distribution-playbook
+In Phase 5, when should you start charging users?	From day one - paying users are the only true validation	distribution-playbook
+What's the rule for using paid ads in the solo app playbook?	Only boost what's already performing organically toward profitable ROAS - ads scale winners, they don't create them	distribution-playbook
+Why does the solo app playbook say to avoid a free tier?	It won't validate real demand	distribution-playbook
+What does Claude Code's "Dispatch" feature do?	Lets you assign a task from your phone; Claude runs it on your desktop in the background and pings you when complete or blocked	claude-workflow
+Rule 1 for reducing Claude usage: what should you do instead of following up with a new message?	Use Edit/Regenerate on the original prompt instead of sending a new message - avoids multiplying context	claude-workflow
+Rule 2: why start a fresh chat every 15-20 messages?	Long conversations cost tokens because Claude rereads everything - summarize, then paste the summary as the first message in a new chat	claude-workflow
+Rule 3 for reducing Claude usage: what should you batch?	Combine multiple questions into one message - saves tokens and gives Claude the full picture at once	claude-workflow
+Rule 5: why upload recurring files to Projects instead of re-uploading per chat?	Files in a Project are cached and referenced without being re-tokenized in every new conversation	claude-workflow
+Rule 8: which model for drafts vs standard work vs deep thinking?	Haiku for drafts/simple tasks, Sonnet for standard work, Opus only for deep thinking	claude-workflow
+Rule 9: how does Claude's usage window work, and how do you exploit it?	Rolling 5-hour window - ping Claude with a small message early (e.g. 6am) to start the window before real work begins	claude-workflow
+Rule 10: when should intensive Claude tasks be run?	Off-peak - evenings or weekends, avoiding 5-11am PT weekdays	claude-workflow
+Rule 11: what's the usage safety net for Pro/Max subscribers?	Enable overage/extra usage to switch to pay-as-you-go API rates once the session limit is hit	claude-workflow
+What are the four files in the "Four-File Framework" for organizing Claude?	agents.md (onboarding/voice), a Context Folder (deep knowledge base), memory.md (personal preferences log), a Skills Folder (reusable workflows)	claude-workflow
+What is agents.md for in the Four-File Framework?	Defines business voice and working style; Claude references it before performing any task	claude-workflow
+What is memory.md for in the Four-File Framework?	Logs personal preferences/corrections continuously so Claude stops repeating the same mistakes	claude-workflow
+What is the "Prove Yourself Wrong" philosophy?	Founders should actively seek reasons their idea might fail, rather than seeking validation	ai-business
+Per this source, what actually drove YC/fundraising success - networking or product?	Product focus, not networking - exceptional products attract investors and talent	ai-business
+What's the critique of "50 AI agents running a company" claims?	Misleading marketing - automation should only be used for tasks you fully understand, or it produces unreliable outcomes	ai-business
+What role should AI play, per this source?	Accelerate learning/efficiency for people who already have foundational knowledge - not replace understanding	ai-business
+What's the hiring principle stated in this source?	Hire for genuine passion and drive	ai-business
+How do "Prove Yourself Wrong" and "Stop Overthinking" pair together?	Seek disconfirmation to de-risk, but commit once the evidence is sufficient - calibrated confidence over paralysis	ai-business
+What's the core argument against Markdown for specs/PR write-ups?	Markdown is restricted to headings/bold/lists - no tables, CSS styling, or SVG charts that HTML supports	doc-engineering
+Why does HTML help AI agents specifically, per this source?	They can directly render charts/data instead of "faking" a representation in text	doc-engineering
+What's the claimed effect of HTML docs on colleague engagement?	Colleagues are more likely to open and interact with HTML content than skim Markdown	doc-engineering
+What are the four behavioral skills that feed into "associational thinking" in the Innovator's DNA model?	Questioning, Observing, Networking, Experimenting	innovation-lifecycle
+What drives the four behavioral skills in the Innovator's DNA model?	Courage to innovate - challenging the status quo and taking risks	innovation-lifecycle
+What is the output of associational thinking in the Innovator's DNA model?	An innovative business idea	innovation-lifecycle
+What are the four stages of the business/executive-skill life cycle (S-curve)?	Startup -> Growth -> Mature -> Decline	innovation-lifecycle
+Which skill type is primarily rewarded during Startup and Decline stages?	Discovery skills (questioning, observing, networking, experimenting, associational thinking)	innovation-lifecycle
+Which skill type dominates during Growth and Mature stages?	Delivery skills (execution, optimization)	innovation-lifecycle
+What is the innovator's core job across the business life cycle, per this model?	Recognize which lifecycle phase the business is in and rebalance the skill mix - especially to spark the next S-curve before decline	innovation-lifecycle
+What is the optimal team size for a "lifestyle boutique" business?	4 to 12 people	lifestyle-business
+What are the "Five Ps" of founder-led growth (Key Person of Influence)?	Pitching, Publishing, Product development, Raising your Profile, Partnerships	lifestyle-business
+What operational hire frees the founder from day-to-day operations?	A General Manager, often with hospitality management experience	lifestyle-business
+What are the four products in the required "product ecosystem"?	A Gift (free/digital), a Product for Prospects (low cost/low friction), a Core Product, a Product for Clients (recurring subscription)	lifestyle-business
+What is the "SAND" dashboard?	"Sleep At Night Dashboard" - tracks vital signs like cash in bank, database size, and red flags	lifestyle-business
+What's the financial benchmark for revenue per team member in a profitable lifestyle business?	At least $125,000 per team member	lifestyle-business
+What % of capital does the top 10% control, per this source?	Approximately 60%	rich-people-sales
+How long does it typically take to build real trust with serious money?	12-24 months	rich-people-sales
+What is the "Social Pitch" acronym and its 6 parts?	Name, Same, Fame, Pain, Aim, Game	rich-people-sales
+What should you always ask before delivering the Social Pitch?	Permission - "Would it be OK if I share a 30-second version of what I'm up to?"	rich-people-sales
+With wealthy prospects, what matters more - pitching or asking questions?	Sharp, specific questions outperform a polished pitch - the pitch gets you in the door, questions get the deal	rich-people-sales
+What is "Contextual Adjacency" in the attention-of-rich-people framework?	Aligning visible markers - locations, brands, education, mutual connections - with the client's world before you speak	rich-people-sales
+What's the caveat about signaling / contextual adjacency?	Works on aspirational/new money; old money often sees through costume and rewards quiet competence	rich-people-sales
+What is the discretion principle with wealthy clients?	Confidentiality is a competitive advantage - don't name-drop clients or leak deal details	rich-people-sales
+What are the 5 steps of "Land & Expand"?	1) Generate proof first (free education/research) 2) Deliver findings as a printed review 3) Let them propose the deal 4) Double down or part ways after two wins 5) Earn the referral	rich-people-sales
+What is the "printed review" tactic for?	Gives the prospect something tangible to share with advisors, spouse, or assistants	rich-people-sales
+What is the key strategic shift recommended for premium sales?	Drop "anyone and everyone" - pick one high-value niche and own it	rich-people-sales
+What is the "Ghost Product" sales strategy?	Point customers to a cheaper option elsewhere to build trust, turning the interaction from adversarial to collaborative	rich-people-sales
+What is the "Prescriptive Close" tactic?	Link product use to an existing daily habit (e.g. brushing teeth) to drive compliance	rich-people-sales
+What payment structure does this source recommend for premium/outcome-based sales?	Secure paid commitments before development starts; charge based on outcomes, not hours	rich-people-sales
