@@ -74,8 +74,10 @@ export function ReviewSession({ deckId, mode, onExit }: ReviewSessionProps) {
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.metaKey || e.ctrlKey || e.altKey || e.repeat) return;
-      const target = e.target as HTMLElement | null;
-      if (target?.closest('input, textarea, [contenteditable="true"]')) return;
+      const target = e.target;
+      if (target instanceof Element && target.closest('input, textarea, [contenteditable="true"]')) {
+        return;
+      }
       if (e.key === ' ' || e.code === 'Space') {
         // Stop a focused button from also being "clicked" by the space bar.
         e.preventDefault();
