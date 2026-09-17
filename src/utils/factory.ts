@@ -1,14 +1,13 @@
 import type { Card, Deck } from '../types';
-import { generateId } from './id';
 
 export function createDeck(name: string): Deck {
-  return { id: generateId(), name, createdAt: new Date().toISOString() };
+  return { id: crypto.randomUUID(), name, createdAt: new Date().toISOString() };
 }
 
 export function createCard(deckId: string, front: string, back: string): Card {
   const now = new Date().toISOString();
   return {
-    id: generateId(),
+    id: crypto.randomUUID(),
     deckId,
     front,
     back,

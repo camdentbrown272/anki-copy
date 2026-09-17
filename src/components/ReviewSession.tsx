@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { useStore } from '../context/StoreContext';
 import type { Card, Rating } from '../types';
 import { isDue } from '../utils/sm2';
+import { shuffle } from '../utils/study';
+import { storage } from '../utils/storage';
 import { MarkdownContent } from './MarkdownContent';
 import { EmptyState } from './EmptyState';
 
@@ -28,9 +30,11 @@ export function ReviewSession({ deckId, mode, onExit }: ReviewSessionProps) {
   const [sessionMode, setSessionMode] = useState<ReviewMode>(mode);
   // Cards still to master this session. Only "Easy" removes a card; any other
   // rating sends it to the back of the queue so it comes around again.
-  const [queue, setQueue] = useState<Card[]>(() =>
-    mode === 'all' ? cardsForDeck(deckId) : dueCardsForDeck(deckId)
-  );
+  const loadQueue = (m: ReviewMode) => {
+    const cards = m === 'all' ? cardsForDeck(deckId) : dueCardsForDeck(deckId);
+    return storage.loadShuffle() ? shuffle(cards) : cards;
+  };
+  const [queue, setQueue] = useState<Card[]>(() => loadQueue(mode));
   const [total, setTotal] = useState(queue.length);
   const [flipped, setFlipped] = useState(false);
   // Increments on every rating. Used as the card's React key so the next card
@@ -58,7 +62,7 @@ export function ReviewSession({ deckId, mode, onExit }: ReviewSessionProps) {
   };
 
   const restart = (nextMode: ReviewMode) => {
-    const next = nextMode === 'all' ? cardsForDeck(deckId) : dueCardsForDeck(deckId);
+    const next = loadQueue(nextMode);
     recorded.current = new Set();
     setSessionMode(nextMode);
     setQueue(next);

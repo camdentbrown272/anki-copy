@@ -3,6 +3,7 @@ import { Sidebar } from './components/Sidebar';
 import { Dashboard } from './components/Dashboard';
 import { DeckDetail } from './components/DeckDetail';
 import { ReviewSession } from './components/ReviewSession';
+import { MasterySession } from './components/MasterySession';
 import { StatsPage } from './components/StatsPage';
 import type { ReviewMode } from './components/ReviewSession';
 import { useTheme } from './hooks/useTheme';
@@ -11,6 +12,7 @@ type View =
   | { name: 'dashboard' }
   | { name: 'deck'; deckId: string }
   | { name: 'review'; deckId: string; mode: ReviewMode }
+  | { name: 'mastery'; deckId: string }
   | { name: 'stats' };
 
 export default function App() {
@@ -35,6 +37,7 @@ export default function App() {
             deckId={view.deckId}
             onBack={() => setView({ name: 'dashboard' })}
             onStartReview={(mode) => setView({ name: 'review', deckId: view.deckId, mode })}
+            onStartMastery={() => setView({ name: 'mastery', deckId: view.deckId })}
           />
         )}
         {view.name === 'review' && (
@@ -42,6 +45,12 @@ export default function App() {
             key={`${view.deckId}-${view.mode}`}
             deckId={view.deckId}
             mode={view.mode}
+            onExit={() => setView({ name: 'deck', deckId: view.deckId })}
+          />
+        )}
+        {view.name === 'mastery' && (
+          <MasterySession
+            deckId={view.deckId}
             onExit={() => setView({ name: 'deck', deckId: view.deckId })}
           />
         )}

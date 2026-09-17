@@ -22,6 +22,10 @@ export function Dashboard({ onOpenDeck }: DashboardProps) {
     setCreating(false);
   };
 
+  const confirmDelete = (id: string, deckName: string) => {
+    if (confirm(`Delete "${deckName}" and all its cards?`)) deleteDeck(id);
+  };
+
   const handleImportFile = async (file: File) => {
     let payloads: ImportPayload[];
     try {
@@ -114,13 +118,13 @@ export function Dashboard({ onOpenDeck }: DashboardProps) {
                     aria-label={`Delete ${deck.name}`}
                     onClick={(e) => {
                       e.stopPropagation();
-                      if (confirm(`Delete "${deck.name}" and all its cards?`)) deleteDeck(deck.id);
+                      confirmDelete(deck.id, deck.name);
                     }}
                     onKeyDown={(e) => {
                       if (e.key !== 'Enter' && e.key !== ' ') return;
                       e.preventDefault();
                       e.stopPropagation();
-                      if (confirm(`Delete "${deck.name}" and all its cards?`)) deleteDeck(deck.id);
+                      confirmDelete(deck.id, deck.name);
                     }}
                     className="rounded-md p-1 text-slate-400 opacity-0 transition hover:bg-red-50 hover:text-red-500 group-hover:opacity-100 dark:hover:bg-red-950"
                   >

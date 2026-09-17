@@ -1,18 +1,20 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useStore } from '../context/StoreContext';
 import type { Card } from '../types';
 import { Modal } from './Modal';
 import { EmptyState } from './EmptyState';
 import { CardEditorModal } from './CardEditorModal';
 import type { ReviewMode } from './ReviewSession';
+import { storage } from '../utils/storage';
 
 interface DeckDetailProps {
   deckId: string;
   onBack: () => void;
   onStartReview: (mode: ReviewMode) => void;
+  onStartMastery: () => void;
 }
 
-export function DeckDetail({ deckId, onBack, onStartReview }: DeckDetailProps) {
+export function DeckDetail({ deckId, onBack, onStartReview, onStartMastery }: DeckDetailProps) {
   const { decks, cardsForDeck, dueCardsForDeck, addCard, updateCard, deleteCard, renameDeck } =
     useStore();
   const deck = decks.find((d) => d.id === deckId);
@@ -20,18 +22,14 @@ export function DeckDetail({ deckId, onBack, onStartReview }: DeckDetailProps) {
   const [editingCard, setEditingCard] = useState<Card | 'new' | null>(null);
   const [renaming, setRenaming] = useState(false);
   const [nameDraft, setNameDraft] = useState(deck?.name ?? '');
+  const [shuffleOn, setShuffleOn] = useState(storage.loadShuffle);
 
   const cards = cardsForDeck(deckId);
   const dueCount = dueCardsForDeck(deckId).length;
 
-  const filtered = useMemo(
-    () =>
-      cards.filter(
-        (c) =>
-          c.front.toLowerCase().includes(search.toLowerCase()) ||
-          c.back.toLowerCase().includes(search.toLowerCase())
-      ),
-    [cards, search]
+  const query = search.toLowerCase();
+  const filtered = cards.filter(
+    (c) => c.front.toLowerCase().includes(query) || c.back.toLowerCase().includes(query)
   );
 
   if (!deck) {
@@ -97,6 +95,25 @@ export function DeckDetail({ deckId, onBack, onStartReview }: DeckDetailProps) {
             className="rounded-lg border border-slate-200 px-3 py-2 text-sm hover:bg-slate-100 dark:border-slate-800 dark:hover:bg-slate-800"
           >
             Add card
+          </button>
+          <label className="flex items-center gap-2 px-2 text-sm text-slate-500 dark:text-slate-400">
+            <input
+              type="checkbox"
+              checked={shuffleOn}
+              onChange={(e) => {
+                setShuffleOn(e.target.checked);
+                storage.saveShuffle(e.target.checked);
+              }}
+              className="accent-indigo-500"
+            />
+            Shuffle
+          </label>
+          <button
+            onClick={onStartMastery}
+            disabled={cards.length === 0}
+            className="rounded-lg border border-emerald-500 px-4 py-2 text-sm font-medium text-emerald-600 hover:bg-emerald-50 disabled:cursor-not-allowed disabled:opacity-40 dark:text-emerald-400 dark:hover:bg-emerald-950"
+          >
+            Mastery mode
           </button>
           <button
             onClick={() => onStartReview('all')}

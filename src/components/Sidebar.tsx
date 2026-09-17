@@ -1,7 +1,7 @@
 import type { Theme } from '../hooks/useTheme';
 
 interface SidebarProps {
-  active: 'dashboard' | 'deck' | 'review' | 'stats';
+  active: string;
   onNavigateDashboard: () => void;
   onNavigateStats: () => void;
   theme: Theme;
@@ -26,7 +26,7 @@ export function Sidebar({
       <nav className="flex flex-1 flex-row gap-1 md:flex-col">
         <button
           onClick={onNavigateDashboard}
-          className={navClass(active === 'dashboard' || active === 'deck' || active === 'review')}
+          className={navClass(active !== 'stats')}
         >
           Decks
         </button>

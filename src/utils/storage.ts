@@ -4,6 +4,7 @@ const DECKS_KEY = 'flashcards:decks';
 const CARDS_KEY = 'flashcards:cards';
 const LOG_KEY = 'flashcards:reviewLog';
 const THEME_KEY = 'flashcards:theme';
+const SHUFFLE_KEY = 'flashcards:shuffle';
 
 function loadJSON<T>(key: string, fallback: T): T {
   try {
@@ -46,5 +47,11 @@ export const storage = {
   },
   saveTheme(theme: 'dark' | 'light'): void {
     saveJSON(THEME_KEY, theme);
+  },
+  loadShuffle(): boolean {
+    return loadJSON(SHUFFLE_KEY, false);
+  },
+  saveShuffle(on: boolean): void {
+    saveJSON(SHUFFLE_KEY, on);
   },
 };
